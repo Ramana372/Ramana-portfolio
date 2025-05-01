@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Details</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .project-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .project-popup.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .project-popup-content {
+            background: #1a1a1a;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 30px;
+            position: relative;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .project-popup.active .project-popup-content {
+            transform: translateY(0);
+        }
+
+        .close-popup {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            color: #85e1c5;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close-popup:hover {
+            color: #7ee8fa;
+        }
+
+        .project-popup-image {
+            width: 100%;
+            height: 300px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .project-popup-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .project-popup-title {
+            font-size: 1.8rem;
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .project-popup-tech {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .project-popup-tech span {
+            background: rgba(133, 225, 197, 0.1);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: #85e1c5;
+        }
+
+        .project-popup-description {
+            color: #adbac7;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .project-popup-features {
+            margin-bottom: 20px;
+        }
+
+        .project-popup-features h3 {
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .project-popup-features ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .project-popup-features li {
+            color: #adbac7;
+            margin-bottom: 8px;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .project-popup-features li:before {
+            content: "•";
+            color: #85e1c5;
+            position: absolute;
+            left: 0;
+        }
+
+        .project-popup-links {
+            display: flex;
+            gap: 15px;
+        }
+
+        .project-popup-links a {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #85e1c5;
+            text-decoration: none;
+            padding: 8px 20px;
+            border: 1px solid #85e1c5;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .project-popup-links a:hover {
+            background: rgba(133, 225, 197, 0.1);
+            color: #7ee8fa;
+        }
+
+        @media (max-width: 768px) {
+            .project-popup-content {
+                width: 95%;
+                padding: 20px;
+            }
+
+            .project-popup-image {
+                height: 200px;
+            }
+
+            .project-popup-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="project-popup" id="projectPopup">
+        <div class="project-popup-content">
+            <div class="close-popup" id="closePopup">
+                <i class="fas fa-times"></i>
+            </div>
+            <div class="project-popup-image">
+                <img id="popupImage" src="" alt="Project Image">
+            </div>
+            <h2 class="project-popup-title" id="popupTitle"></h2>
+            <div class="project-popup-tech" id="popupTech"></div>
+            <div class="project-popup-description" id="popupDescription"></div>
+            <div class="project-popup-features">
+                <h3>Key Features</h3>
+                <ul id="popupFeatures"></ul>
+            </div>
+            <div class="project-popup-links" id="popupLinks"></div>
+        </div>
+    </div>
+
+    <script>
+        // Function to show project details
+        function showProjectDetails(project) {
+            document.getElementById('popupImage').src = project.image;
+            document.getElementById('popupTitle').textContent = project.title;
+            
+            const techContainer = document.getElementById('popupTech');
+            techContainer.innerHTML = '';
+            project.technologies.forEach(tech => {
+                const span = document.createElement('span');
+                span.textContent = tech;
+                techContainer.appendChild(span);
+            });
+
+            document.getElementById('popupDescription').textContent = project.description;
+            
+            const featuresContainer = document.getElementById('popupFeatures');
+            featuresContainer.innerHTML = '';
+            project.features.forEach(feature => {
+                const li = document.createElement('li');
+                li.textContent = feature;
+                featuresContainer.appendChild(li);
+            });
+
+            const linksContainer = document.getElementById('popupLinks');
+            linksContainer.innerHTML = '';
+            if (project.github) {
+                const githubLink = document.createElement('a');
+                githubLink.href = project.github;
+                githubLink.target = '_blank';
+                githubLink.innerHTML = '<i class="fab fa-github"></i> View on GitHub';
+                linksContainer.appendChild(githubLink);
+            }
+            if (project.demo) {
+                const demoLink = document.createElement('a');
+                demoLink.href = project.demo;
+                demoLink.target = '_blank';
+                demoLink.innerHTML = '<i class="fas fa-external-link-alt"></i> Live Demo';
+                linksContainer.appendChild(demoLink);
+            }
+
+            document.getElementById('projectPopup').classList.add('active');
+        }
+
+        // Function to close popup
+        document.getElementById('closePopup').addEventListener('click', function() {
+            document.getElementById('projectPopup').classList.remove('active');
+        });
+
+        // Close popup when clicking outside
+        document.getElementById('projectPopup').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html> 
